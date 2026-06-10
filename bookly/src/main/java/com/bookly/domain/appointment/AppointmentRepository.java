@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface AppointmentRepository extends JpaRepository<Appointment, UUID> {
 
     boolean existsByServiceIdAndStatusNotAndStartTimeAfter(UUID serviceId, String status, LocalDateTime after);
+
+    long countByTenantIdAndStatusNotAndStartTimeBetween(UUID tenantId, String status, LocalDateTime from, LocalDateTime to);
 }

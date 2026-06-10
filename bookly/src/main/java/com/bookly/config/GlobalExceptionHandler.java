@@ -3,6 +3,7 @@ package com.bookly.config;
 import com.bookly.exception.ConflictException;
 import com.bookly.exception.ErrorResponse;
 import com.bookly.exception.NotFoundException;
+import com.bookly.exception.PlanLimitException;
 import com.bookly.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -28,6 +29,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(NotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(PlanLimitException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handlePlanLimit(PlanLimitException e) {
         return new ErrorResponse(e.getMessage());
     }
 
