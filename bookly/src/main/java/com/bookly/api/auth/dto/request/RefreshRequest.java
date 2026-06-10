@@ -1,4 +1,4 @@
-package com.bookly.api.auth.dto;
+package com.bookly.api.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

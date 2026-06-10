@@ -3,7 +3,6 @@ package com.bookly.api.service;
 import com.bookly.api.service.dto.request.ServiceCreateRequest;
 import com.bookly.api.service.dto.request.ServiceUpdateRequest;
 import com.bookly.api.service.dto.response.ServiceDTO;
-import com.bookly.domain.service.Service;
 import com.bookly.domain.service.ServiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,18 +25,18 @@ public class ServiceAdminController {
 
     @GetMapping
     public ResponseEntity<List<ServiceDTO>> getAll() {
-        List<ServiceDTO> services = serviceService.findAll().stream().map(this::toDto).toList();
+        List<ServiceDTO> services = serviceService.findAll().stream().map(ServiceDTO::from).toList();
         return ResponseEntity.ok(services);
     }
 
     @PostMapping
     public ResponseEntity<ServiceDTO> create(@RequestBody @Valid ServiceCreateRequest req) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(toDto(serviceService.create(req)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ServiceDTO.from(serviceService.create(req)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ServiceDTO> update(@PathVariable UUID id, @RequestBody @Valid ServiceUpdateRequest req) {
-        return ResponseEntity.ok(toDto(serviceService.update(id, req)));
+        return ResponseEntity.ok(ServiceDTO.from(serviceService.update(id, req)));
     }
 
     @DeleteMapping("/{id}")
@@ -45,12 +44,5 @@ public class ServiceAdminController {
         serviceService.softDelete(id);
         return ResponseEntity.noContent().build();
     }
-
-
-
-
-    private ServiceDTO toDto(Service service) {
-        return new ServiceDTO(service.getId(),service.getName(),service.getDescription(),
-                service.getDurationMinutes(),service.getPrice());
-    }
 }
+

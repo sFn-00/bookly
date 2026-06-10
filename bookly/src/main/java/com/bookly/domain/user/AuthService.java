@@ -1,8 +1,8 @@
 package com.bookly.domain.user;
 
-import com.bookly.api.auth.dto.LoginRequest;
-import com.bookly.api.auth.dto.RegisterRequest;
-import com.bookly.api.auth.dto.TokenPair;
+import com.bookly.api.auth.dto.request.LoginRequest;
+import com.bookly.api.auth.dto.request.RegisterRequest;
+import com.bookly.api.auth.dto.response.TokenPair;
 import com.bookly.config.TenantContext;
 import com.bookly.domain.tenant.Tenant;
 import com.bookly.domain.tenant.TenantService;
