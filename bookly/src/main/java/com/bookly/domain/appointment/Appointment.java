@@ -25,6 +25,9 @@ public class Appointment {
     @Column(name = "service_id", nullable = false)
     private UUID serviceId;
 
+    @Column(name = "client_id")
+    private UUID clientId;
+
     @Column(name = "staff_id", nullable = false)
     private UUID staffId;
 
@@ -37,6 +40,12 @@ public class Appointment {
     @Column(nullable = false)
     private String status = "PENDING";
 
+    @Column(columnDefinition = "TEXT")
+    private String notes;
+
     @Version
     private Long version;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
