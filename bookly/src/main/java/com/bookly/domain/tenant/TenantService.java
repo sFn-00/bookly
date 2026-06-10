@@ -33,6 +33,12 @@ public class TenantService {
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found: " + subdomain));
     }
 
+    @Transactional(readOnly = true)
+    public Tenant findById(UUID tenantId) {
+        return tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant not found: " + tenantId));
+    }
+
     @Transactional
     public void updatePlan(UUID tenantId, Plan plan) {
         Tenant tenant = tenantRepository.findById(tenantId)
