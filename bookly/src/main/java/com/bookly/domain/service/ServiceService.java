@@ -55,6 +55,13 @@ public class ServiceService {
         service.setActive(false);
     }
 
+    @Transactional(readOnly = true)
+    public com.bookly.domain.service.Service findById(UUID id) {
+        UUID tenantId = TenantContext.getTenantId();
+        return serviceRepository.findByIdAndTenantIdAndActiveTrue(id, tenantId)
+                .orElseThrow(() -> new NotFoundException("Service not found"));
+    }
+
     private com.bookly.domain.service.Service findActiveForCurrentTenant(UUID id) {
         UUID tenantId = TenantContext.getTenantId();
         return serviceRepository.findByIdAndTenantIdAndActiveTrue(id, tenantId)
