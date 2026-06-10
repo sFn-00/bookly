@@ -44,12 +44,8 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public TokenPair login(LoginRequest req) {
-        String tenantId = TenantContext.getTenant();
         User user = userService.findActiveByEmail(req.email());
-
-        if (tenantId != null && !user.getTenantId().toString().equals(tenantId)) {
-            throw new UnauthorizedException("invalid credentials");
-        }
+        TenantContext.assertTenantMatch(user.getTenantId());
 
         if (!passwordEncoder.matches(req.password(), user.getPasswordHash())) {
             throw new UnauthorizedException("invalid credentials");
@@ -71,11 +67,7 @@ public class AuthService {
         }
 
         User user = userService.findById(UUID.fromString(claims.getSubject()));
-
-        String tenantId = TenantContext.getTenant();
-        if (tenantId != null && !user.getTenantId().toString().equals(tenantId)) {
-            throw new UnauthorizedException("invalid token");
-        }
+        TenantContext.assertTenantMatch(user.getTenantId());
 
         return new TokenPair(
                 jwtService.generateAccessToken(user, user.getTenantId().toString()),
