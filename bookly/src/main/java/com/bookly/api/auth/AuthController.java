@@ -1,9 +1,9 @@
 package com.bookly.api.auth;
 
-import com.bookly.api.auth.dto.LoginRequest;
-import com.bookly.api.auth.dto.RefreshRequest;
-import com.bookly.api.auth.dto.RegisterRequest;
-import com.bookly.api.auth.dto.TokenPair;
+import com.bookly.api.auth.dto.request.LoginRequest;
+import com.bookly.api.auth.dto.request.RefreshRequest;
+import com.bookly.api.auth.dto.request.RegisterRequest;
+import com.bookly.api.auth.dto.response.TokenPair;
 import com.bookly.domain.user.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
