@@ -39,6 +39,12 @@ public class TenantService {
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found: " + tenantId));
     }
 
+    @Transactional(readOnly = true)
+    public Tenant findByStripeCustomerId(String stripeCustomerId) {
+        return tenantRepository.findByStripeCustomerId(stripeCustomerId)
+                .orElseThrow(() -> new IllegalStateException("No tenant for customer " + stripeCustomerId));
+    }
+
     @Transactional
     public void updatePlan(UUID tenantId, Plan plan) {
         Tenant tenant = tenantRepository.findById(tenantId)
