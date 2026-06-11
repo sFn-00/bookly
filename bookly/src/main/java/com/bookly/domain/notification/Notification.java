@@ -26,6 +26,12 @@ public class Notification {
     @Column(nullable = false)
     private NotificationType type;
 
+    @Column(name = "recipient_email")
+    private String recipientEmail;
+
+    @Column(name = "recipient_phone")
+    private String recipientPhone;
+
     @Column(name = "scheduled_at", nullable = false)
     private LocalDateTime scheduledAt;
 
