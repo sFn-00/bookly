@@ -7,6 +7,7 @@ import com.bookly.domain.availability.Availability;
 import com.bookly.domain.availability.AvailabilityService;
 import com.bookly.domain.client.Client;
 import com.bookly.domain.client.ClientService;
+import com.bookly.domain.appointment.AppointmentStatus;
 import com.bookly.domain.plan.PlanEnforcer;
 import com.bookly.domain.service.Service;
 import com.bookly.domain.service.ServiceService;
@@ -157,13 +158,13 @@ class BookingServiceTest {
         Appointment appointment = new Appointment();
         appointment.setId(id);
         appointment.setTenantId(tenantId);
-        appointment.setStatus("PENDING");
+        appointment.setStatus(AppointmentStatus.PENDING);
 
         when(appointmentRepository.findById(id)).thenReturn(Optional.of(appointment));
 
         bookingService.cancel(id);
 
-        assertThat(appointment.getStatus()).isEqualTo("CANCELLED");
+        assertThat(appointment.getStatus()).isEqualTo(AppointmentStatus.CANCELLED);
     }
 
     @Test
@@ -181,7 +182,7 @@ class BookingServiceTest {
         Appointment appointment = new Appointment();
         appointment.setId(id);
         appointment.setTenantId(UUID.randomUUID());
-        appointment.setStatus("PENDING");
+        appointment.setStatus(AppointmentStatus.PENDING);
 
         when(appointmentRepository.findById(id)).thenReturn(Optional.of(appointment));
 
@@ -195,7 +196,7 @@ class BookingServiceTest {
         Appointment appointment = new Appointment();
         appointment.setId(id);
         appointment.setTenantId(tenantId);
-        appointment.setStatus("CANCELLED");
+        appointment.setStatus(AppointmentStatus.CANCELLED);
 
         when(appointmentRepository.findById(id)).thenReturn(Optional.of(appointment));
 
