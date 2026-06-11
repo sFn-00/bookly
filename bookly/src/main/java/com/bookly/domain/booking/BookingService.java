@@ -3,6 +3,7 @@ package com.bookly.domain.booking;
 import com.bookly.config.TenantContext;
 import com.bookly.domain.appointment.Appointment;
 import com.bookly.domain.appointment.AppointmentRepository;
+import com.bookly.domain.appointment.AppointmentStatus;
 import com.bookly.domain.availability.Availability;
 import com.bookly.domain.availability.AvailabilityService;
 import com.bookly.domain.client.Client;
@@ -51,7 +52,7 @@ public class BookingService {
         List<Appointment> appointments = appointmentRepository
                 .findByStaffIdAndStatusInAndStartTimeBetween(
                         query.staffId(),
-                        List.of("PENDING", "CONFIRMED"),
+                        List.of(AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED),
                         date.atStartOfDay(),
                         date.atTime(LocalTime.MAX)
                 );
@@ -118,10 +119,10 @@ public class BookingService {
 
         TenantContext.assertTenantMatch(appointment.getTenantId());
 
-        if ("CANCELLED".equals(appointment.getStatus())) {
+        if (AppointmentStatus.CANCELLED == appointment.getStatus()) {
             throw new ConflictException("Appointment is already cancelled");
         }
 
-        appointment.setStatus("CANCELLED");
+        appointment.setStatus(AppointmentStatus.CANCELLED);
     }
 }

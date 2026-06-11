@@ -6,6 +6,7 @@ import com.bookly.config.TenantFilter;
 import com.bookly.domain.appointment.Appointment;
 import com.bookly.domain.booking.AvailableSlotsQuery;
 import com.bookly.domain.booking.BookingService;
+import com.bookly.domain.appointment.AppointmentStatus;
 import com.bookly.domain.booking.TimeSlot;
 import com.bookly.domain.service.Service;
 import com.bookly.domain.service.ServiceService;
@@ -94,7 +95,7 @@ class BookingControllerTest {
         appointment.setServiceId(req.serviceId());
         appointment.setStartTime(req.startTime());
         appointment.setEndTime(req.startTime().plusMinutes(30));
-        appointment.setStatus("PENDING");
+        appointment.setStatus(AppointmentStatus.PENDING);
 
         when(bookingService.book(any())).thenReturn(appointment);
 
@@ -102,7 +103,7 @@ class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.status").value("PENDING"));
+                .andExpect(jsonPath("$.status").value("PENDING")); // enum serializes to its name
     }
 
     @Test

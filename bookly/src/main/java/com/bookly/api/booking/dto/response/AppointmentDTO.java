@@ -1,6 +1,7 @@
 package com.bookly.api.booking.dto.response;
 
 import com.bookly.domain.appointment.Appointment;
+import com.bookly.domain.appointment.AppointmentStatus;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -11,7 +12,7 @@ public record AppointmentDTO(
         UUID serviceId,
         LocalDateTime startTime,
         LocalDateTime endTime,
-        String status,
+        AppointmentStatus status,
         String notes
 ) {
     public static AppointmentDTO from(Appointment appointment) {

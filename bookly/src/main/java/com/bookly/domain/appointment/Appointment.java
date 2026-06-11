@@ -37,8 +37,9 @@ public class Appointment {
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status = "PENDING";
+    private AppointmentStatus status = AppointmentStatus.PENDING;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
