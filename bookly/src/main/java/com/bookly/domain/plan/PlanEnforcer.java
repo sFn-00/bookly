@@ -1,7 +1,6 @@
 package com.bookly.domain.plan;
 
 import com.bookly.domain.appointment.AppointmentService;
-import com.bookly.domain.staff.StaffService;
 import com.bookly.domain.tenant.Plan;
 import com.bookly.domain.tenant.TenantService;
 import com.bookly.exception.PlanLimitException;
@@ -15,15 +14,13 @@ import java.util.UUID;
 public class PlanEnforcer {
 
     private final TenantService tenantService;
-    private final StaffService staffService;
     private final AppointmentService appointmentService;
 
-    public void checkStaffLimit(UUID tenantId) {
+    public void checkStaffLimit(UUID tenantId, long currentCount) {
         Plan plan = tenantService.findById(tenantId).getPlan();
         if (plan.hasUnlimitedStaff()) return;
 
-        long current = staffService.countActiveStaff(tenantId);
-        if (current >= plan.getMaxStaff()) {
+        if (currentCount >= plan.getMaxStaff()) {
             throw new PlanLimitException(
                     "Staff limit reached for plan " + plan + " (max " + plan.getMaxStaff() + ")"
             );

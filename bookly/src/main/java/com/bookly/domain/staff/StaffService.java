@@ -21,7 +21,8 @@ public class StaffService {
 
     public Staff create(StaffCreateRequest req){
        UUID tenantUUID = TenantContext.getTenantId();
-       planEnforcer.checkStaffLimit(tenantUUID);
+       long currentCount = staffRepository.countByTenantIdAndActiveTrue(tenantUUID);
+       planEnforcer.checkStaffLimit(tenantUUID, currentCount);
 
        Staff staff = new Staff();
        staff.setTenantId(tenantUUID);

@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,7 +63,7 @@ class StaffServiceTest {
 
         staffService.create(req);
 
-        verify(planEnforcer).checkStaffLimit(tenantId);
+        verify(planEnforcer).checkStaffLimit(eq(tenantId), anyLong());
     }
 
     @Test
