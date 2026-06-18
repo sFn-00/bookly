@@ -1,7 +1,6 @@
 package com.bookly.domain.plan;
 
 import com.bookly.domain.appointment.AppointmentService;
-import com.bookly.domain.staff.StaffService;
 import com.bookly.domain.tenant.Plan;
 import com.bookly.domain.tenant.Tenant;
 import com.bookly.domain.tenant.TenantService;
@@ -22,7 +21,6 @@ import static org.mockito.Mockito.when;
 class PlanEnforcerTest {
 
     @Mock TenantService tenantService;
-    @Mock StaffService staffService;
     @Mock AppointmentService appointmentService;
     @InjectMocks PlanEnforcer planEnforcer;
 
@@ -30,9 +28,8 @@ class PlanEnforcerTest {
     void checkStaffLimit_freePlanAtLimit_throwsPlanLimitException() {
         UUID tenantId = UUID.randomUUID();
         when(tenantService.findById(tenantId)).thenReturn(tenantWithPlan(Plan.FREE));
-        when(staffService.countActiveStaff(tenantId)).thenReturn(1L);
 
-        assertThatThrownBy(() -> planEnforcer.checkStaffLimit(tenantId))
+        assertThatThrownBy(() -> planEnforcer.checkStaffLimit(tenantId, 1L))
                 .isInstanceOf(PlanLimitException.class);
     }
 
@@ -40,18 +37,16 @@ class PlanEnforcerTest {
     void checkStaffLimit_freePlanBelowLimit_doesNotThrow() {
         UUID tenantId = UUID.randomUUID();
         when(tenantService.findById(tenantId)).thenReturn(tenantWithPlan(Plan.FREE));
-        when(staffService.countActiveStaff(tenantId)).thenReturn(0L);
 
-        assertThatCode(() -> planEnforcer.checkStaffLimit(tenantId)).doesNotThrowAnyException();
+        assertThatCode(() -> planEnforcer.checkStaffLimit(tenantId, 0L)).doesNotThrowAnyException();
     }
 
     @Test
     void checkStaffLimit_proPlanAtLimit_throwsPlanLimitException() {
         UUID tenantId = UUID.randomUUID();
         when(tenantService.findById(tenantId)).thenReturn(tenantWithPlan(Plan.PRO));
-        when(staffService.countActiveStaff(tenantId)).thenReturn(5L);
 
-        assertThatThrownBy(() -> planEnforcer.checkStaffLimit(tenantId))
+        assertThatThrownBy(() -> planEnforcer.checkStaffLimit(tenantId, 5L))
                 .isInstanceOf(PlanLimitException.class);
     }
 
@@ -60,7 +55,7 @@ class PlanEnforcerTest {
         UUID tenantId = UUID.randomUUID();
         when(tenantService.findById(tenantId)).thenReturn(tenantWithPlan(Plan.ENTERPRISE));
 
-        assertThatCode(() -> planEnforcer.checkStaffLimit(tenantId)).doesNotThrowAnyException();
+        assertThatCode(() -> planEnforcer.checkStaffLimit(tenantId, 999L)).doesNotThrowAnyException();
     }
 
     @Test
