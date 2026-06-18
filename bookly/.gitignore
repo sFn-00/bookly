@@ -33,5 +33,12 @@ build/
 ### VS Code ###
 .vscode/
 
-#env files
+# env / local overrides
 .env
+.env.local
+application-local.yml
+application-local.yaml
+
+# test dump files
+*.dump
+*.dumpstream
