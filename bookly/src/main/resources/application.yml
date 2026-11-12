@@ -35,7 +35,7 @@ app:
   mail:
     from: ${MAIL_FROM:noreply@bookly.pl}
   jwt:
-    secret: ${JWT_SECRET:dev-secret-key-must-be-at-least-256-bits-long-change-in-production!!}
+    secret: ${JWT_SECRET}
     access-token-expiration: 900000      # 15 minutes
     refresh-token-expiration: 604800000  # 7 days
   stripe:
