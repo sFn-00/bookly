@@ -41,13 +41,13 @@ public class NotificationScheduler {
         switch (notification.getType()) {
             case EMAIL -> {
                 if (notification.getRecipientEmail() == null) throw new IllegalStateException("No recipient email");
-                emailService.sendAppointmentReminder(notification.getRecipientEmail(), notification.getAppointmentId());
-                log.info("Email sent for appointment {}", notification.getAppointmentId());
+                emailService.sendAppointmentReminder(notification.getRecipientEmail(), notification.getAppointment().getId());
+                log.info("Email sent for appointment {}", notification.getAppointment().getId());
             }
             case SMS -> {
                 if (notification.getRecipientPhone() == null) throw new IllegalStateException("No recipient phone");
-                smsService.sendAppointmentReminder(notification.getRecipientPhone(), notification.getAppointmentId());
-                log.info("SMS sent for appointment {}", notification.getAppointmentId());
+                smsService.sendAppointmentReminder(notification.getRecipientPhone(), notification.getAppointment().getId());
+                log.info("SMS sent for appointment {}", notification.getAppointment().getId());
             }
         }
     }

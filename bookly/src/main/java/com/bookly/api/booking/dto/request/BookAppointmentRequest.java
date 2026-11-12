@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public record BookAppointmentRequest(
         @NotNull UUID staffId,
-        @NotNull UUID serviceId,
+        @NotNull UUID offeringId,
         @NotNull LocalDateTime startTime,
         @NotBlank String clientFirstName,
         @NotBlank String clientLastName,

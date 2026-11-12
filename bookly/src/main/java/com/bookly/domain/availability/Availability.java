@@ -1,5 +1,6 @@
 package com.bookly.domain.availability;
 
+import com.bookly.domain.staff.Staff;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +23,9 @@ public class Availability {
     @Column(name = "tenant_id", nullable = false)
     private UUID tenantId;
 
-    @Column(name = "staff_id", nullable = false)
-    private UUID staffId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "staff_id", nullable = false)
+    private Staff staff;
 
     @Convert(converter = DayOfWeekConverter.class)
     @Column(name = "day_of_week", nullable = false)

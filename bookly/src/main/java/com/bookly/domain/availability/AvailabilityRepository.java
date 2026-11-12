@@ -1,5 +1,6 @@
 package com.bookly.domain.availability;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +13,6 @@ public interface AvailabilityRepository extends JpaRepository<Availability, UUID
 
     List<Availability> findByStaffIdAndDayOfWeek(UUID staffId, DayOfWeek dayOfWeek);
 
+    @EntityGraph(attributePaths = "staff")
     List<Availability> findByStaffId(UUID staffId);
 }

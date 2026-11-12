@@ -1,5 +1,7 @@
 package com.bookly.api.booking.dto.response;
 
+import com.bookly.api.offering.dto.response.OfferingSummaryDTO;
+import com.bookly.api.staff.dto.response.StaffSummaryDTO;
 import com.bookly.domain.appointment.Appointment;
 import com.bookly.domain.appointment.AppointmentStatus;
 
@@ -8,8 +10,8 @@ import java.util.UUID;
 
 public record AppointmentDTO(
         UUID id,
-        UUID staffId,
-        UUID serviceId,
+        StaffSummaryDTO staff,
+        OfferingSummaryDTO offering,
         LocalDateTime startTime,
         LocalDateTime endTime,
         AppointmentStatus status,
@@ -18,8 +20,8 @@ public record AppointmentDTO(
     public static AppointmentDTO from(Appointment appointment) {
         return new AppointmentDTO(
                 appointment.getId(),
-                appointment.getStaffId(),
-                appointment.getServiceId(),
+                StaffSummaryDTO.from(appointment.getStaff()),
+                OfferingSummaryDTO.from(appointment.getOffering()),
                 appointment.getStartTime(),
                 appointment.getEndTime(),
                 appointment.getStatus(),

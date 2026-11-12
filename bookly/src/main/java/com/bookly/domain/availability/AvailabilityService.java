@@ -3,6 +3,7 @@ package com.bookly.domain.availability;
 
 import com.bookly.api.staff.dto.request.AddAvailabilityRequest;
 import com.bookly.config.TenantContext;
+import com.bookly.domain.staff.StaffService;
 import com.bookly.exception.ConflictException;
 import com.bookly.util.TimeUtils;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class AvailabilityService {
 
     private final AvailabilityRepository availabilityRepository;
+    private final StaffService staffService;
 
 
     @Transactional(readOnly = true)
@@ -37,7 +39,7 @@ public class AvailabilityService {
 
         Availability availability = new Availability();
         availability.setTenantId(TenantContext.getTenantId());
-        availability.setStaffId(req.staffId());
+        availability.setStaff(staffService.findById(req.staffId()));
         availability.setDayOfWeek(req.dayOfWeek());
         availability.setStartTime(req.startTime());
         availability.setEndTime(req.endTime());

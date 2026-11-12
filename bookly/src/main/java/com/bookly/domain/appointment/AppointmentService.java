@@ -22,9 +22,9 @@ public class AppointmentService {
     private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
-    public boolean hasUpcomingAppointmentsForService(UUID serviceId) {
-        return appointmentRepository.existsByServiceIdAndStatusNotAndStartTimeAfter(
-                serviceId, AppointmentStatus.CANCELLED, LocalDateTime.now()
+    public boolean hasUpcomingAppointmentsForOffering(UUID offeringId) {
+        return appointmentRepository.existsByOfferingIdAndStatusNotAndStartTimeAfter(
+                offeringId, AppointmentStatus.CANCELLED, LocalDateTime.now()
         );
     }
 

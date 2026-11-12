@@ -9,8 +9,9 @@ import com.bookly.domain.client.Client;
 import com.bookly.domain.client.ClientService;
 import com.bookly.domain.appointment.AppointmentStatus;
 import com.bookly.domain.plan.PlanEnforcer;
-import com.bookly.domain.service.Service;
-import com.bookly.domain.service.ServiceService;
+import com.bookly.domain.offering.Offering;
+import com.bookly.domain.offering.OfferingService;
+import com.bookly.domain.staff.Staff;
 import com.bookly.domain.staff.StaffService;
 import com.bookly.exception.ConflictException;
 import com.bookly.exception.NotFoundException;
@@ -41,7 +42,7 @@ class BookingServiceTest {
 
     @Mock AppointmentRepository appointmentRepository;
     @Mock ClientService clientService;
-    @Mock ServiceService serviceService;
+    @Mock OfferingService offeringService;
     @Mock StaffService staffService;
     @Mock AvailabilityService availabilityService;
     @Mock PlanEnforcer planEnforcer;
@@ -49,7 +50,8 @@ class BookingServiceTest {
 
     private final UUID tenantId = UUID.randomUUID();
     private final UUID staffId = UUID.randomUUID();
-    private final UUID serviceId = UUID.randomUUID();
+    private final Staff staff = buildStaff();
+    private final UUID offeringId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
@@ -69,7 +71,7 @@ class BookingServiceTest {
         when(availabilityService.getByStaffAndDay(staffId, DayOfWeek.MONDAY)).thenReturn(List.of());
 
         List<TimeSlot> slots = bookingService.calculateAvailableSlots(
-                new AvailableSlotsQuery(staffId, serviceId, monday));
+                new AvailableSlotsQuery(staffId, offeringId, monday));
 
         assertThat(slots).isEmpty();
     }
@@ -78,15 +80,15 @@ class BookingServiceTest {
     void calculateAvailableSlots_noAppointments_returnsAllSlots() {
         LocalDate monday = LocalDate.of(2025, 1, 6);
         Availability window = buildAvailability(LocalTime.of(9, 0), LocalTime.of(10, 0));
-        Service service = buildService(30);
+        Offering offering = buildOffering(30);
 
         when(availabilityService.getByStaffAndDay(staffId, DayOfWeek.MONDAY)).thenReturn(List.of(window));
         when(appointmentRepository.findByStaffIdAndStatusInAndStartTimeBetween(any(), any(), any(), any()))
                 .thenReturn(List.of());
-        when(serviceService.findById(serviceId)).thenReturn(service);
+        when(offeringService.findById(offeringId)).thenReturn(offering);
 
         List<TimeSlot> slots = bookingService.calculateAvailableSlots(
-                new AvailableSlotsQuery(staffId, serviceId, monday));
+                new AvailableSlotsQuery(staffId, offeringId, monday));
 
         assertThat(slots).hasSize(2);
         assertThat(slots.get(0).startTime()).isEqualTo(monday.atTime(9, 0));
@@ -97,7 +99,7 @@ class BookingServiceTest {
     void calculateAvailableSlots_withAppointment_blocksOverlappingSlot() {
         LocalDate monday = LocalDate.of(2025, 1, 6);
         Availability window = buildAvailability(LocalTime.of(9, 0), LocalTime.of(10, 0));
-        Service service = buildService(30);
+        Offering offering = buildOffering(30);
 
         Appointment existing = new Appointment();
         existing.setStartTime(monday.atTime(9, 0));
@@ -106,10 +108,10 @@ class BookingServiceTest {
         when(availabilityService.getByStaffAndDay(staffId, DayOfWeek.MONDAY)).thenReturn(List.of(window));
         when(appointmentRepository.findByStaffIdAndStatusInAndStartTimeBetween(any(), any(), any(), any()))
                 .thenReturn(List.of(existing));
-        when(serviceService.findById(serviceId)).thenReturn(service);
+        when(offeringService.findById(offeringId)).thenReturn(offering);
 
         List<TimeSlot> slots = bookingService.calculateAvailableSlots(
-                new AvailableSlotsQuery(staffId, serviceId, monday));
+                new AvailableSlotsQuery(staffId, offeringId, monday));
 
         assertThat(slots).hasSize(1);
         assertThat(slots.get(0).startTime()).isEqualTo(monday.atTime(9, 30));
@@ -125,8 +127,9 @@ class BookingServiceTest {
         Appointment saved = new Appointment();
         saved.setId(UUID.randomUUID());
 
-        when(clientService.findOrCreate(any(), any(), any(), any(), any())).thenReturn(client);
-        when(serviceService.findById(serviceId)).thenReturn(buildService(30));
+        when(clientService.getOrCreate(any(), any(), any(), any(), any())).thenReturn(client);
+        when(offeringService.findById(offeringId)).thenReturn(buildOffering(30));
+        when(staffService.findById(staffId)).thenReturn(staff);
         when(appointmentRepository.save(any())).thenReturn(saved);
 
         Appointment result = bookingService.book(request);
@@ -142,8 +145,9 @@ class BookingServiceTest {
         Client client = new Client();
         client.setId(UUID.randomUUID());
 
-        when(clientService.findOrCreate(any(), any(), any(), any(), any())).thenReturn(client);
-        when(serviceService.findById(serviceId)).thenReturn(buildService(30));
+        when(clientService.getOrCreate(any(), any(), any(), any(), any())).thenReturn(client);
+        when(offeringService.findById(offeringId)).thenReturn(buildOffering(30));
+        when(staffService.findById(staffId)).thenReturn(staff);
         when(appointmentRepository.save(any())).thenThrow(new DataIntegrityViolationException("conflict"));
 
         assertThatThrownBy(() -> bookingService.book(request))
@@ -206,22 +210,28 @@ class BookingServiceTest {
 
     private Availability buildAvailability(LocalTime start, LocalTime end) {
         Availability a = new Availability();
-        a.setStaffId(staffId);
+        a.setStaff(staff);
         a.setDayOfWeek(DayOfWeek.MONDAY);
         a.setStartTime(start);
         a.setEndTime(end);
         return a;
     }
 
-    private Service buildService(int durationMinutes) {
-        Service s = new Service();
-        s.setId(serviceId);
+    private Offering buildOffering(int durationMinutes) {
+        Offering s = new Offering();
+        s.setId(offeringId);
         s.setDurationMinutes(durationMinutes);
         return s;
     }
 
     private BookRequest buildBookRequest(LocalDateTime startTime) {
-        return new BookRequest(staffId, serviceId, startTime, null,
+        return new BookRequest(staffId, offeringId, startTime, null,
                 "Jan", "Kowalski", "jan@example.com", null);
+    }
+
+    private Staff buildStaff() {
+        Staff s = new Staff();
+        s.setId(staffId);
+        return s;
     }
 }

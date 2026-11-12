@@ -5,6 +5,7 @@ import com.bookly.config.SecurityConfig;
 import com.bookly.config.TenantFilter;
 import com.bookly.domain.availability.Availability;
 import com.bookly.domain.availability.AvailabilityService;
+import com.bookly.domain.staff.Staff;
 import com.bookly.exception.ConflictException;
 import com.bookly.infrastructure.jwt.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,7 +60,7 @@ class AvailabilityAdminControllerTest {
         mockMvc.perform(get("/api/admin/staff/" + staffId + "/availability"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].dayOfWeek").value("MONDAY"))
-                .andExpect(jsonPath("$[0].staffId").value(staffId.toString()));
+                .andExpect(jsonPath("$[0].staff.id").value(staffId.toString()));
     }
 
     @Test
@@ -134,7 +135,11 @@ class AvailabilityAdminControllerTest {
         Availability a = new Availability();
         a.setId(UUID.randomUUID());
         a.setTenantId(UUID.randomUUID());
-        a.setStaffId(staffId);
+        Staff staff = new Staff();
+        staff.setId(staffId);
+        staff.setFirstName("Anna");
+        staff.setLastName("Nowak");
+        a.setStaff(staff);
         a.setDayOfWeek(day);
         a.setStartTime(LocalTime.of(9, 0));
         a.setEndTime(LocalTime.of(17, 0));

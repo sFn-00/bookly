@@ -8,8 +8,10 @@ import com.bookly.domain.availability.Availability;
 import com.bookly.domain.availability.AvailabilityService;
 import com.bookly.domain.client.Client;
 import com.bookly.domain.client.ClientService;
+import com.bookly.domain.offering.Offering;
+import com.bookly.domain.offering.OfferingService;
 import com.bookly.domain.plan.PlanEnforcer;
-import com.bookly.domain.service.ServiceService;
+import com.bookly.domain.staff.Staff;
 import com.bookly.domain.staff.StaffService;
 import com.bookly.exception.ConflictException;
 import com.bookly.exception.NotFoundException;
@@ -34,7 +36,7 @@ public class BookingService {
 
     private final AppointmentRepository appointmentRepository;
     private final ClientService clientService;
-    private final ServiceService serviceService;
+    private final OfferingService offeringService;
     private final StaffService staffService;
     private final AvailabilityService availabilityService;
     private final PlanEnforcer planEnforcer;
@@ -57,7 +59,7 @@ public class BookingService {
                         date.atTime(LocalTime.MAX)
                 );
 
-        int duration = serviceService.findById(query.serviceId()).getDurationMinutes();
+        int duration = offeringService.findById(query.offeringId()).getDurationMinutes();
 
         return availabilities.stream()
                 .flatMap(window -> generateSlotsForWindow(date, window, duration, appointments).stream())
@@ -92,17 +94,18 @@ public class BookingService {
         UUID tenantId = TenantContext.getTenantId();
         planEnforcer.checkMonthlyBookingLimit(tenantId);
 
-        Client client = clientService.findOrCreate(tenantId, request.clientFirstName(),
+        Client client = clientService.getOrCreate(tenantId, request.clientFirstName(),
                 request.clientLastName(), request.clientEmail(), request.clientPhone());
-        int duration = serviceService.findById(request.serviceId()).getDurationMinutes();
+        Offering offering = offeringService.findById(request.offeringId());
+        Staff staff = staffService.findById(request.staffId());
 
         Appointment appointment = new Appointment();
         appointment.setTenantId(tenantId);
-        appointment.setClientId(client.getId());
-        appointment.setStaffId(request.staffId());
-        appointment.setServiceId(request.serviceId());
+        appointment.setClient(client);
+        appointment.setStaff(staff);
+        appointment.setOffering(offering);
         appointment.setStartTime(request.startTime());
-        appointment.setEndTime(request.startTime().plusMinutes(duration));
+        appointment.setEndTime(request.startTime().plusMinutes(offering.getDurationMinutes()));
         appointment.setNotes(request.notes());
 
         try {

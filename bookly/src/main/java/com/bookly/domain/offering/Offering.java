@@ -1,4 +1,4 @@
-package com.bookly.domain.service;
+package com.bookly.domain.offering;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "services")
+@Table(name = "offerings")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Service {
+public class Offering {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

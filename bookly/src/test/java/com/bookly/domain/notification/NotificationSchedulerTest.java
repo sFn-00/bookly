@@ -33,7 +33,7 @@ class NotificationSchedulerTest {
 
         assertThat(n.getStatus()).isEqualTo(NotificationStatus.SENT);
         assertThat(n.getSentAt()).isNotNull();
-        verify(emailService).sendAppointmentReminder("client@example.com", n.getAppointmentId());
+        verify(emailService).sendAppointmentReminder("client@example.com", n.getAppointment().getId());
         verify(smsService, never()).sendAppointmentReminder(any(), any());
     }
 
@@ -47,7 +47,7 @@ class NotificationSchedulerTest {
 
         assertThat(n.getStatus()).isEqualTo(NotificationStatus.SENT);
         assertThat(n.getSentAt()).isNotNull();
-        verify(smsService).sendAppointmentReminder("+48123456789", n.getAppointmentId());
+        verify(smsService).sendAppointmentReminder("+48123456789", n.getAppointment().getId());
         verify(emailService, never()).sendAppointmentReminder(any(), any());
     }
 
@@ -102,7 +102,9 @@ class NotificationSchedulerTest {
     private Notification buildNotification(NotificationType type, String email, String phone) {
         Notification n = new Notification();
         n.setId(UUID.randomUUID());
-        n.setAppointmentId(UUID.randomUUID());
+        com.bookly.domain.appointment.Appointment appt = new com.bookly.domain.appointment.Appointment();
+        appt.setId(UUID.randomUUID());
+        n.setAppointment(appt);
         n.setType(type);
         n.setStatus(NotificationStatus.PENDING);
         n.setScheduledAt(LocalDateTime.now().minusMinutes(5));

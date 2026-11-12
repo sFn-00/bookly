@@ -19,16 +19,22 @@ public class ClientService {
         return clientRepository.findById(id);
     }
 
-    public Client findOrCreate(UUID tenantId, String firstName, String lastName, String email, String phone) {
-        return clientRepository.findByTenantIdAndEmail(tenantId, email)
-                .orElseGet(() -> {
-                    Client c = new Client();
-                    c.setTenantId(tenantId);
-                    c.setFirstName(firstName);
-                    c.setLastName(lastName);
-                    c.setEmail(email);
-                    c.setPhone(phone);
-                    return clientRepository.save(c);
-                });
+    /**
+     * Returns the tenant's client with this email, creating it when missing.
+     * Not a pure query (it may write), hence "get" instead of "find".
+     * Name and phone of an existing client are intentionally NOT overwritten: the booking
+     * endpoint is public, so anyone knowing an email could otherwise change that client's data.
+     */
+    public Client getOrCreate(UUID tenantId, String firstName, String lastName, String email, String phone) {
+        Optional<Client> existing = clientRepository.findByTenantIdAndEmailIgnoreCase(tenantId, email);
+        if (existing.isPresent()) {
+            return existing.get();
+        }
+
+        clientRepository.insertIfAbsent(tenantId, firstName, lastName, email, phone);
+
+        // Re-read: either our row or the one a concurrent request inserted first.
+        return clientRepository.findByTenantIdAndEmailIgnoreCase(tenantId, email)
+                .orElseThrow(() -> new IllegalStateException("Client missing after insert"));
     }
 }

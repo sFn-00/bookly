@@ -5,6 +5,8 @@ import com.bookly.config.TenantFilter;
 import com.bookly.domain.appointment.Appointment;
 import com.bookly.domain.appointment.AppointmentService;
 import com.bookly.domain.appointment.AppointmentStatus;
+import com.bookly.domain.offering.Offering;
+import com.bookly.domain.staff.Staff;
 import com.bookly.exception.ConflictException;
 import com.bookly.exception.NotFoundException;
 import com.bookly.infrastructure.jwt.JwtService;
@@ -132,11 +134,26 @@ class AppointmentAdminControllerTest {
         Appointment a = new Appointment();
         a.setId(UUID.randomUUID());
         a.setTenantId(UUID.randomUUID());
-        a.setStaffId(UUID.randomUUID());
-        a.setServiceId(UUID.randomUUID());
+        a.setStaff(buildStaff());
+        a.setOffering(buildOffering());
         a.setStartTime(LocalDateTime.of(2025, 1, 6, 10, 0));
         a.setEndTime(LocalDateTime.of(2025, 1, 6, 10, 30));
         a.setStatus(status);
         return a;
+    }
+
+    private Staff buildStaff() {
+        Staff s = new Staff();
+        s.setId(UUID.randomUUID());
+        s.setFirstName("Anna");
+        s.setLastName("Nowak");
+        return s;
+    }
+
+    private Offering buildOffering() {
+        Offering sv = new Offering();
+        sv.setId(UUID.randomUUID());
+        sv.setName("Haircut");
+        return sv;
     }
 }

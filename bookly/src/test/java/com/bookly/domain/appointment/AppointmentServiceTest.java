@@ -2,6 +2,8 @@ package com.bookly.domain.appointment;
 
 import com.bookly.config.TenantContext;
 import com.bookly.domain.notification.NotificationService;
+import com.bookly.domain.offering.Offering;
+import com.bookly.domain.staff.Staff;
 import com.bookly.exception.ConflictException;
 import com.bookly.exception.NotFoundException;
 import org.junit.jupiter.api.AfterEach;
@@ -137,11 +139,26 @@ class AppointmentServiceTest {
         Appointment a = new Appointment();
         a.setId(UUID.randomUUID());
         a.setTenantId(tenantId);
-        a.setStaffId(UUID.randomUUID());
-        a.setServiceId(UUID.randomUUID());
+        a.setStaff(buildStaff());
+        a.setOffering(buildOffering());
         a.setStartTime(LocalDateTime.of(2025, 1, 6, 10, 0));
         a.setEndTime(LocalDateTime.of(2025, 1, 6, 10, 30));
         a.setStatus(status);
         return a;
+    }
+
+    private Staff buildStaff() {
+        Staff s = new Staff();
+        s.setId(UUID.randomUUID());
+        s.setFirstName("Anna");
+        s.setLastName("Nowak");
+        return s;
+    }
+
+    private Offering buildOffering() {
+        Offering sv = new Offering();
+        sv.setId(UUID.randomUUID());
+        sv.setName("Haircut");
+        return sv;
     }
 }

@@ -1,5 +1,6 @@
 package com.bookly.domain.staff;
 
+import com.bookly.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +23,9 @@ public class Staff {
     @Column(name = "tenant_id", nullable = false)
     private UUID tenantId;
 
-    @Column(name ="user_id")
-    private UUID userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name="first_name",nullable = false)
     private String firstName;

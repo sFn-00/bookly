@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public record BookRequest(
         UUID staffId,
-        UUID serviceId,
+        UUID offeringId,
         LocalDateTime startTime,
         String notes,
         String clientFirstName,

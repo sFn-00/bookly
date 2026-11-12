@@ -1,5 +1,6 @@
 package com.bookly.domain.notification;
 
+import com.bookly.domain.appointment.Appointment;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,8 +20,9 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "appointment_id", nullable = false)
-    private UUID appointmentId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "appointment_id", nullable = false)
+    private Appointment appointment;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

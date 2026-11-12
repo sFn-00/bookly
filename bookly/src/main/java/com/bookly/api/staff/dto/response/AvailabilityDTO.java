@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public record AvailabilityDTO(
         UUID id,
-        UUID staffId,
+        StaffSummaryDTO staff,
         DayOfWeek dayOfWeek,
         LocalTime startTime,
         LocalTime endTime
@@ -16,7 +16,7 @@ public record AvailabilityDTO(
     public static AvailabilityDTO from(Availability availability) {
         return new AvailabilityDTO(
                 availability.getId(),
-                availability.getStaffId(),
+                StaffSummaryDTO.from(availability.getStaff()),
                 availability.getDayOfWeek(),
                 availability.getStartTime(),
                 availability.getEndTime()

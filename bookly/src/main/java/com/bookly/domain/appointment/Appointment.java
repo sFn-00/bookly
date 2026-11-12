@@ -1,5 +1,8 @@
 package com.bookly.domain.appointment;
 
+import com.bookly.domain.client.Client;
+import com.bookly.domain.offering.Offering;
+import com.bookly.domain.staff.Staff;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,14 +25,17 @@ public class Appointment {
     @Column(name = "tenant_id", nullable = false)
     private UUID tenantId;
 
-    @Column(name = "service_id", nullable = false)
-    private UUID serviceId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "offering_id", nullable = false)
+    private Offering offering;
 
-    @Column(name = "client_id")
-    private UUID clientId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id")
+    private Client client;
 
-    @Column(name = "staff_id", nullable = false)
-    private UUID staffId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "staff_id", nullable = false)
+    private Staff staff;
 
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;

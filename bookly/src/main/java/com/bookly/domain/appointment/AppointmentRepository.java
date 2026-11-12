@@ -1,5 +1,6 @@
 package com.bookly.domain.appointment;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,12 +12,13 @@ import java.util.UUID;
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, UUID> {
 
+    @EntityGraph(attributePaths = {"staff", "offering"})
     Optional<Appointment> findByTenantIdAndStatusAndId(UUID tenantId, AppointmentStatus status, UUID uuid);
 
     Optional<Appointment> findByTenantIdAndId(UUID tenantId, UUID id);
 
-    boolean existsByServiceIdAndStatusNotAndStartTimeAfter(
-            UUID serviceId, AppointmentStatus status, LocalDateTime after);
+    boolean existsByOfferingIdAndStatusNotAndStartTimeAfter(
+            UUID offeringId, AppointmentStatus status, LocalDateTime after);
 
     long countByTenantIdAndStatusNotAndStartTimeBetween(
             UUID tenantId, AppointmentStatus status, LocalDateTime from, LocalDateTime to);
@@ -24,9 +26,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     List<Appointment> findByStaffIdAndStatusInAndStartTimeBetween(
             UUID staffId, List<AppointmentStatus> statuses, LocalDateTime from, LocalDateTime to);
 
+    @EntityGraph(attributePaths = {"staff", "offering"})
     List<Appointment> findByTenantIdAndStartTimeBetween(
             UUID tenantId, LocalDateTime from, LocalDateTime to);
 
+    @EntityGraph(attributePaths = {"staff", "offering"})
     List<Appointment> findByTenantIdAndStatusAndStartTimeBetween(
             UUID tenantId, AppointmentStatus status, LocalDateTime from, LocalDateTime to);
 }

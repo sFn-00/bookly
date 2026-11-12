@@ -8,8 +8,9 @@ import com.bookly.domain.booking.AvailableSlotsQuery;
 import com.bookly.domain.booking.BookingService;
 import com.bookly.domain.appointment.AppointmentStatus;
 import com.bookly.domain.booking.TimeSlot;
-import com.bookly.domain.service.Service;
-import com.bookly.domain.service.ServiceService;
+import com.bookly.domain.offering.Offering;
+import com.bookly.domain.offering.OfferingService;
+import com.bookly.domain.staff.Staff;
 import com.bookly.exception.ConflictException;
 import com.bookly.exception.NotFoundException;
 import com.bookly.infrastructure.jwt.JwtService;
@@ -42,7 +43,7 @@ class BookingControllerTest {
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
     @MockitoBean BookingService bookingService;
-    @MockitoBean ServiceService serviceService;
+    @MockitoBean OfferingService offeringService;
     @MockitoBean JwtService jwtService;
     @MockitoBean TenantFilter tenantFilter;
 
@@ -55,11 +56,11 @@ class BookingControllerTest {
     }
 
     @Test
-    void getServices_noAuth_returns200() throws Exception {
-        Service s = buildService("Haircut");
-        when(serviceService.findAll()).thenReturn(List.of(s));
+    void getOfferings_noAuth_returns200() throws Exception {
+        Offering s = buildOffering("Haircut");
+        when(offeringService.findAll()).thenReturn(List.of(s));
 
-        mockMvc.perform(get("/api/booking/services"))
+        mockMvc.perform(get("/api/booking/offerings"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Haircut"));
     }
@@ -67,7 +68,7 @@ class BookingControllerTest {
     @Test
     void getSlots_validParams_returns200() throws Exception {
         UUID staffId = UUID.randomUUID();
-        UUID serviceId = UUID.randomUUID();
+        UUID offeringId = UUID.randomUUID();
         LocalDate date = LocalDate.of(2025, 1, 6);
         TimeSlot slot = new TimeSlot(date.atTime(9, 0), date.atTime(9, 30));
 
@@ -76,7 +77,7 @@ class BookingControllerTest {
 
         mockMvc.perform(get("/api/booking/slots")
                         .param("staffId", staffId.toString())
-                        .param("serviceId", serviceId.toString())
+                        .param("offeringId", offeringId.toString())
                         .param("date", "2025-01-06"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].startTime").exists());
@@ -91,8 +92,12 @@ class BookingControllerTest {
 
         Appointment appointment = new Appointment();
         appointment.setId(UUID.randomUUID());
-        appointment.setStaffId(req.staffId());
-        appointment.setServiceId(req.serviceId());
+        Staff staff = new Staff();
+        staff.setId(req.staffId());
+        appointment.setStaff(staff);
+        Offering offering = new Offering();
+        offering.setId(req.offeringId());
+        appointment.setOffering(offering);
         appointment.setStartTime(req.startTime());
         appointment.setEndTime(req.startTime().plusMinutes(30));
         appointment.setStatus(AppointmentStatus.PENDING);
@@ -151,8 +156,8 @@ class BookingControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    private Service buildService(String name) {
-        Service s = new Service();
+    private Offering buildOffering(String name) {
+        Offering s = new Offering();
         s.setId(UUID.randomUUID());
         s.setName(name);
         s.setDurationMinutes(30);

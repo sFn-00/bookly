@@ -2,6 +2,8 @@ package com.bookly.domain.availability;
 
 import com.bookly.api.staff.dto.request.AddAvailabilityRequest;
 import com.bookly.config.TenantContext;
+import com.bookly.domain.staff.Staff;
+import com.bookly.domain.staff.StaffService;
 import com.bookly.exception.ConflictException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,14 +27,17 @@ import static org.mockito.Mockito.*;
 class AvailabilityServiceTest {
 
     @Mock AvailabilityRepository availabilityRepository;
+    @Mock StaffService staffService;
     @InjectMocks AvailabilityService availabilityService;
 
     private final UUID tenantId = UUID.randomUUID();
     private final UUID staffId = UUID.randomUUID();
+    private final Staff staff = buildStaff(staffId);
 
     @BeforeEach
     void setUp() {
         TenantContext.setTenant(tenantId.toString());
+        org.mockito.Mockito.lenient().when(staffService.findById(staffId)).thenReturn(staff);
     }
 
     @AfterEach
@@ -54,7 +59,7 @@ class AvailabilityServiceTest {
         ArgumentCaptor<Availability> captor = ArgumentCaptor.forClass(Availability.class);
         verify(availabilityRepository).save(captor.capture());
         assertThat(captor.getValue().getTenantId()).isEqualTo(tenantId);
-        assertThat(captor.getValue().getStaffId()).isEqualTo(staffId);
+        assertThat(captor.getValue().getStaff()).isEqualTo(staff);
         assertThat(result).isEqualTo(saved);
     }
 
@@ -117,10 +122,16 @@ class AvailabilityServiceTest {
         Availability a = new Availability();
         a.setId(UUID.randomUUID());
         a.setTenantId(tenantId);
-        a.setStaffId(staffId);
+        a.setStaff(staff);
         a.setDayOfWeek(day);
         a.setStartTime(start);
         a.setEndTime(end);
         return a;
+    }
+
+    private static Staff buildStaff(UUID id) {
+        Staff s = new Staff();
+        s.setId(id);
+        return s;
     }
 }
