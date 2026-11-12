@@ -15,7 +15,7 @@
 | | 2.4 HTTP 403 — tenant mismatch | Task 4.8 | ✅ Pokryte |
 | | 2.5 HTTP 401 — wygasły access token | Task 4.6, 4.7 | ✅ Pokryte |
 | | 2.6 HTTP 403 — niewystarczająca rola | Task 4.7 | ✅ Pokryte |
-| **3. ServiceModule** | 3.1 Zapis usługi z tenant_id | Task 5.3, 5.5 | ✅ Pokryte |
+| **3. OfferingModule** | 3.1 Zapis usługi z tenant_id | Task 5.3, 5.5 | ✅ Pokryte |
 | | 3.2 Update tylko własnej usługi | Task 5.3, 5.5 | ✅ Pokryte |
 | | 3.3 Soft delete (active = false) | Task 5.3, 5.5 | ✅ Pokryte |
 | | 3.4 Zwrot tylko usług bieżącego tenanta | Task 5.2, 5.3 | ✅ Pokryte |
@@ -88,7 +88,7 @@ Task 1 (Setup)
     └── Task 2 (DB Schema)
             └── Task 3 (TenantResolver)
                     └── Task 4 (AuthModule)
-                            ├── Task 5 (ServiceModule)
+                            ├── Task 5 (OfferingModule)
                             ├── Task 6 (PlanEnforcer) ← współdzielone przez Tasks 7, 8
                             │       └── Task 7 (StaffModule)
                             │       └── Task 8 (BookingEngine)

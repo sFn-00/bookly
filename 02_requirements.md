@@ -52,17 +52,17 @@ Dokument opisuje wymagania funkcjonalne systemu Bookly. Każde kryterium akcepta
 
 ---
 
-### Wymaganie 3: Zarządzanie usługami (ServiceModule)
+### Wymaganie 3: Zarządzanie usługami (OfferingModule)
 
 **Opis**: Owner może dodawać, edytować, dezaktywować i usuwać usługi oferowane przez firmę.
 
 #### Kryteria akceptacji
 
-1. WHEN Owner wysyła `POST /api/admin/services` z poprawnymi danymi, THE **ServiceModule** SHALL zapisać usługę z `tenant_id` z `TenantContext` i zwrócić HTTP 201.
-2. WHEN Owner wysyła `PUT /api/admin/services/{id}`, THE **ServiceModule** SHALL zaktualizować wyłącznie usługę należącą do bieżącego tenanta.
-3. WHEN Owner wysyła `DELETE /api/admin/services/{id}`, THE **ServiceModule** SHALL oznaczyć usługę jako `active = false` (soft delete), nie usuwając rekordu fizycznie.
-4. WHEN `GET /api/admin/services` jest wywoływane, THE **ServiceModule** SHALL zwrócić wyłącznie usługi należące do tenanta z `TenantContext`.
-5. WHEN usługa ma powiązane przyszłe rezerwacje i Owner próbuje ją usunąć, THE **ServiceModule** SHALL zwrócić HTTP 409 z komunikatem `"service has upcoming appointments"`.
+1. WHEN Owner wysyła `POST /api/admin/offerings` z poprawnymi danymi, THE **OfferingModule** SHALL zapisać usługę z `tenant_id` z `TenantContext` i zwrócić HTTP 201.
+2. WHEN Owner wysyła `PUT /api/admin/offerings/{id}`, THE **OfferingModule** SHALL zaktualizować wyłącznie usługę należącą do bieżącego tenanta.
+3. WHEN Owner wysyła `DELETE /api/admin/offerings/{id}`, THE **OfferingModule** SHALL oznaczyć usługę jako `active = false` (soft delete), nie usuwając rekordu fizycznie.
+4. WHEN `GET /api/admin/offerings` jest wywoływane, THE **OfferingModule** SHALL zwrócić wyłącznie usługi należące do tenanta z `TenantContext`.
+5. WHEN usługa ma powiązane przyszłe rezerwacje i Owner próbuje ją usunąć, THE **OfferingModule** SHALL zwrócić HTTP 409 z komunikatem `"Offering has upcoming appointments"`.
 
 ---
 
@@ -86,7 +86,7 @@ Dokument opisuje wymagania funkcjonalne systemu Bookly. Każde kryterium akcepta
 
 #### Kryteria akceptacji
 
-1. WHEN klient wywołuje `GET /api/booking/slots?serviceId={id}&staffId={id}&date={date}`, THE **BookingEngine** SHALL obliczyć listę dostępnych slotów na podstawie harmonogramu pracownika z **StaffModule** i istniejących rezerwacji ze statusem `CONFIRMED` lub `PENDING`.
+1. WHEN klient wywołuje `GET /api/booking/slots?offeringId={id}&staffId={id}&date={date}`, THE **BookingEngine** SHALL obliczyć listę dostępnych slotów na podstawie harmonogramu pracownika z **StaffModule** i istniejących rezerwacji ze statusem `CONFIRMED` lub `PENDING`.
 2. WHEN klient wywołuje `POST /api/booking/appointments`, THE **BookingEngine** SHALL wywołać **PlanEnforcer** i sprawdzić, czy miesięczny limit rezerwacji tenanta nie zostałby przekroczony.
 3. WHEN limit rezerwacji zostałby przekroczony, THE **PlanEnforcer** SHALL zwrócić HTTP 403 z komunikatem `"monthly booking limit reached"`.
 4. WHEN slot jest dostępny i limit nie jest przekroczony, THE **BookingEngine** SHALL zapisać rezerwację ze statusem `PENDING` i zwrócić HTTP 201 z UUID rezerwacji.

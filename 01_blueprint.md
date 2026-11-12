@@ -43,7 +43,7 @@ Bookly to wielotenantowa platforma SaaS umożliwiająca małym firmom usługowym
 | **TenantResolver** | Wyciąga identyfikator tenanta z subdomeny requesta i ustawia go w TenantContext (ThreadLocal) |
 | **AuthModule** | Obsługuje rejestrację tenantów, logowanie użytkowników, wydawanie i odświeżanie tokenów JWT |
 | **TenantModule** | Zarządza danymi tenantów — tworzenie konta, konfiguracja, aktywacja/deaktywacja |
-| **ServiceModule** | CRUD usług oferowanych przez tenanta (nazwa, czas trwania, cena) |
+| **OfferingModule** | CRUD usług oferowanych przez tenanta (nazwa, czas trwania, cena) |
 | **StaffModule** | Zarządzanie pracownikami tenanta i ich harmonogramem dostępności |
 | **BookingEngine** | Oblicza dostępne sloty czasowe, tworzy i anuluje rezerwacje klientów końcowych |
 | **AppointmentModule** | Panel admina — przeglądanie, potwierdzanie i anulowanie rezerwacji przez OWNER/STAFF |
@@ -68,7 +68,7 @@ graph TD
     TENANT_RES --> AUTH[AuthModule\nJWT]
     TENANT_RES --> BOOKING[BookingEngine\nPublic API]
     TENANT_RES --> APPT[AppointmentModule\nAdmin API]
-    TENANT_RES --> SVC[ServiceModule\nAdmin API]
+    TENANT_RES --> SVC[OfferingModule\nAdmin API]
     TENANT_RES --> STAFF[StaffModule\nAdmin API]
     TENANT_RES --> SUB[SubscriptionModule\nStripe]
 

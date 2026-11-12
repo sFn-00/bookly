@@ -145,29 +145,29 @@ public class TenantService {
 
 ---
 
-### Komponent: ServiceModule
+### Komponent: OfferingModule
 
 **Cel**: CRUD usług oferowanych przez tenanta
 
-**Lokalizacja**: `bookly/domain/service/`, `bookly/api/admin/ServiceAdminController.java`
+**Lokalizacja**: `bookly/domain/offering/`, `bookly/api/offering/OfferingAdminController.java`
 
 **Interfejs**:
 ```java
-// ServiceAdminController.java
-@RestController @RequestMapping("/api/admin/services")
+// OfferingAdminController.java
+@RestController @RequestMapping("/api/admin/offerings")
 @PreAuthorize("hasRole('OWNER') or hasRole('STAFF')")
-public class ServiceAdminController {
-    GET    /              → List<ServiceDTO>  // Implements Req 3.4
-    POST   /              → ServiceDTO        // Implements Req 3.1
-    PUT    /{id}          → ServiceDTO        // Implements Req 3.2
+public class OfferingAdminController {
+    GET    /              → List<OfferingDTO>  // Implements Req 3.4
+    POST   /              → OfferingDTO        // Implements Req 3.1
+    PUT    /{id}          → OfferingDTO        // Implements Req 3.2
     DELETE /{id}          → HTTP 204          // Implements Req 3.3, 3.5
 }
 
-// ServiceService.java
-public class ServiceService {
-    public List<Service> findAllForCurrentTenant();          // tenant_id from TenantContext
-    public Service create(CreateServiceRequest req);
-    public Service update(UUID id, UpdateServiceRequest req);
+// OfferingService.java
+public class OfferingService {
+    public List<Offering> findAllForCurrentTenant();          // tenant_id from TenantContext
+    public Offering create(OfferingCreateRequest req);
+    public Offering update(UUID id, OfferingUpdateRequest req);
     public void softDelete(UUID id);                         // Implements Req 3.3
     private void validateNoUpcomingAppointments(UUID id);    // Implements Req 3.5
 }
@@ -224,15 +224,15 @@ public class StaffService {
 // BookingController.java — PUBLICZNY (bez autoryzacji JWT)
 @RestController @RequestMapping("/api/booking")
 public class BookingController {
-    GET  /services                        → List<ServiceDTO>     // Lista usług tenanta
-    GET  /slots?serviceId&staffId&date    → List<SlotDTO>        // Implements Req 5.1
+    GET  /offerings                       → List<OfferingDTO>     // Lista usług tenanta
+    GET  /slots?offeringId&staffId&date    → List<SlotDTO>        // Implements Req 5.1
     POST /appointments                    → AppointmentDTO        // Implements Req 5.2, 5.3, 5.4, 5.5
     PUT  /appointments/{id}/cancel        → HTTP 204              // Implements Req 5.6
 }
 
 // BookingService.java
 public class BookingService {
-    public List<Slot> calculateAvailableSlots(UUID serviceId, UUID staffId, LocalDate date); // Req 5.1
+    public List<Slot> calculateAvailableSlots(UUID offeringId, UUID staffId, LocalDate date); // Req 5.1
     public Appointment book(BookingRequest req);   // Req 5.2-5.5, wywołuje PlanEnforcer
     public void cancel(UUID appointmentId);         // Req 5.6
 }
@@ -242,7 +242,7 @@ public class BookingService {
 public class Appointment {
     @Id UUID id;
     @Column(nullable = false) UUID tenantId;
-    UUID clientId; UUID staffId; UUID serviceId;
+    UUID clientId; UUID staffId; UUID offeringId;
     LocalDateTime startTime; LocalDateTime endTime;
     @Enumerated AppointmentStatus status;   // PENDING / CONFIRMED / CANCELLED
     String notes;
@@ -410,7 +410,7 @@ CREATE INDEX idx_appointments_tenant_date ON appointments(tenant_id, start_time)
 CREATE INDEX idx_appointments_staff_time ON appointments(staff_id, start_time, end_time);
 CREATE INDEX idx_notifications_pending ON notifications(status, scheduled_at) WHERE status = 'PENDING';
 CREATE INDEX idx_users_tenant ON users(tenant_id);
-CREATE INDEX idx_services_tenant ON services(tenant_id, active);
+CREATE INDEX idx_offerings_tenant_active ON offerings(tenant_id, active);
 ```
 
 **Flyway migrations**: `V1__init_schema.sql`, `V2__add_indexes.sql`, `V3__add_notifications.sql`

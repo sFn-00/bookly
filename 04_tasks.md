@@ -14,7 +14,7 @@
 ---
 
 - [ ] **2. Model bazy danych i migracje Flyway**
-  - [ ] 2.1 Utworzenie `V1__init_schema.sql` z tabelami: `tenants`, `users`, `services`, `staff`, `availability`, `appointments`, `notifications`, `subscriptions`
+  - [ ] 2.1 Utworzenie `V1__init_schema.sql` z tabelami: `tenants`, `users`, `services` (od V6: `offerings`), `staff`, `availability`, `appointments`, `notifications`, `subscriptions`
   - [ ] 2.2 Dodanie kolumn `tenant_id UUID NOT NULL` do wszystkich tabel (poza `tenants`)
   - [ ] 2.3 Utworzenie `V2__add_indexes.sql` — indeksy na `(tenant_id, start_time)`, `(status, scheduled_at)`, `(tenant_id, active)`
   - [ ] 2.4 Dodanie kolumny `version BIGINT` do tabeli `appointments` (optimistic locking)
@@ -43,12 +43,12 @@
 
 ---
 
-- [ ] **5. ServiceModule — CRUD usług**
-  - [ ] 5.1 Implementacja encji `Service.java` z polami `tenant_id`, `name`, `description`, `duration_minutes`, `price`, `active`
-  - [ ] 5.2 Implementacja `ServiceRepository` — metoda `findAllByTenantIdAndActiveTrue(UUID tenantId)`
-  - [ ] 5.3 Implementacja `ServiceService` — metody `findAll()`, `create()`, `update()`, `softDelete()` (wszystkie z `TenantContext.getTenant()`)
-  - [ ] 5.4 Walidacja w `softDelete()`: sprawdzenie czy istnieją przyszłe appointments z tym service_id i statusem != CANCELLED → jeśli tak, HTTP 409
-  - [ ] 5.5 Implementacja `ServiceAdminController` — GET, POST, PUT, DELETE z `@PreAuthorize("hasRole('OWNER') or hasRole('STAFF')")`
+- [ ] **5. OfferingModule — CRUD usług**
+  - [ ] 5.1 Implementacja encji `Offering.java` z polami `tenant_id`, `name`, `description`, `duration_minutes`, `price`, `active`
+  - [ ] 5.2 Implementacja `OfferingRepository` — metoda `findAllByTenantIdAndActiveTrue(UUID tenantId)`
+  - [ ] 5.3 Implementacja `OfferingService` — metody `findAll()`, `create()`, `update()`, `softDelete()` (wszystkie z `TenantContext.getTenant()`)
+  - [ ] 5.4 Walidacja w `softDelete()`: sprawdzenie czy istnieją przyszłe appointments z tym offering_id i statusem != CANCELLED → jeśli tak, HTTP 409
+  - [ ] 5.5 Implementacja `OfferingAdminController` — GET, POST, PUT, DELETE z `@PreAuthorize("hasRole('OWNER') or hasRole('STAFF')")`
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
 ---
@@ -74,7 +74,7 @@
   - [ ] 8.1 Implementacja `BookingService.calculateAvailableSlots()` — pobierz harmonogram pracownika dla danego dnia, pobierz istniejące rezerwacje (status PENDING lub CONFIRMED), oblicz wolne sloty co `duration_minutes` usługi
   - [ ] 8.2 Implementacja `BookingService.book()` — wywołuje `PlanEnforcer.checkMonthlyBookingLimit()`, następnie zapis z `@Transactional` i obsługa `OptimisticLockingFailureException` → HTTP 409
   - [ ] 8.3 Implementacja `BookingService.cancel()` — walidacja `tenant_id` rezerwacji vs `TenantContext`
-  - [ ] 8.4 Implementacja `BookingController` — endpointy publiczne (bez `@PreAuthorize`): GET `/services`, GET `/slots`, POST `/appointments`, PUT `/appointments/{id}/cancel`
+  - [ ] 8.4 Implementacja `BookingController` — endpointy publiczne (bez `@PreAuthorize`): GET `/offerings`, GET `/slots`, POST `/appointments`, PUT `/appointments/{id}/cancel`
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6_
 
 ---
@@ -120,7 +120,7 @@
 
 - [ ] **12. ReactBookingSPA — publiczna strona rezerwacji**
   - [ ] 12.1 Setup projektu React + Vite + Tailwind CSS + React Query
-  - [ ] 12.2 Implementacja widoku wyboru usługi (`GET /api/booking/services`)
+  - [ ] 12.2 Implementacja widoku wyboru usługi (`GET /api/booking/offerings`)
   - [ ] 12.3 Implementacja wyboru pracownika i daty
   - [ ] 12.4 Implementacja widoku dostępnych slotów (`GET /api/booking/slots`)
   - [ ] 12.5 Implementacja formularza klienta i potwierdzenia (`POST /api/booking/appointments`)
